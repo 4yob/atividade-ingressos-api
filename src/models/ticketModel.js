@@ -36,4 +36,19 @@ const deleteTicket = async (id) => {
     return { message: "Ingresso deletado com sucesso." };
 };
 
-module.exports = { getTickets, getTicketById, createTicket, updateTicket, deleteTicket };
+const buyTicket = async (id, quantidade_comprada) => {
+    const ticket = await getTicketById(id);
+    if (!ticket) {
+        return { error: "Ingresso não encontrado." };
+    }
+    if (quantidade_comprada > ticket.quantidade_disponivel) {
+        return { error: "Quantidade solicitada maior que a disponível." };
+    }
+    const result = await pool.query(
+        "UPDATE tickets SET quantidade_disponivel = $1 WHERE id = $2 RETURNING *",
+        [ticket.quantidade_disponivel - quantidade_comprada, id]
+    );
+    return result.rows[0];
+}
+
+module.exports = { getTickets, getTicketById, createTicket, updateTicket, deleteTicket, buyTicket };

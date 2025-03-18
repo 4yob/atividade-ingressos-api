@@ -55,4 +55,17 @@ const deleteTicket = async (req, res) => {
     }
 };
 
-module.exports = { getAllTickets, getTicket, createTicket, updateTicket, deleteTicket };
+const buyTicket = async (req, res) => {
+    try {
+        const { quantidade_comprada } = req.body;
+        const ticket = await ticketModel.buyTicket(req.params.id, quantidade_comprada);
+        if (!ticket) {
+            return res.status(404).json({ message: "Ingresso não encontrado." });
+        }
+        res.json(ticket);
+    } catch (error) {
+        res.status(500).json({ message: "Erro ao comprar ingresso." });
+    }
+};
+
+module.exports = { getAllTickets, getTicket, createTicket, updateTicket, deleteTicket, buyTicket };
