@@ -57,13 +57,14 @@ const deleteTicket = async (req, res) => {
 
 const buyTicket = async (req, res) => {
     try {
-        const { quantidade_comprada } = req.body;
-        const ticket = await ticketModel.buyTicket(req.params.id, quantidade_comprada);
-        if (!ticket) {
-            return res.status(404).json({ message: "Ingresso não encontrado." });
+        const { id, quantidade_comprada } = req.body;
+        const newTicket = await ticketModel.buyTicket(id, quantidade_comprada);
+        if (newTicket.error) {
+            return res.status(404).json({ message: newTicket.error });
         }
-        res.json(ticket);
+        res.status(200).json(newTicket);
     } catch (error) {
+        console.log(error);
         res.status(500).json({ message: "Erro ao comprar ingresso." });
     }
 };
